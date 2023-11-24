@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function Login({loggedIn}) {
+function Login({getUn, loggedIn}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [wrongLogin, setWrongLogin] = useState(false);
@@ -27,7 +27,8 @@ function Login({loggedIn}) {
     }).then(data => {
       console.log(data);
       localStorage.setItem('login-token', data.token);
-      loggedIn(true);
+      loggedIn();
+      getUn(username);
     }).catch(error => {
       console.log(error);
     });
@@ -35,7 +36,6 @@ function Login({loggedIn}) {
 
   return (
     <div>
-      <h1>Fake Store</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="username">Username:</label>
         <input
