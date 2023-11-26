@@ -1,4 +1,10 @@
 import { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
 
 function Login({loggedIn}) {
   const [username, setUsername] = useState('');
@@ -47,30 +53,36 @@ function Login({loggedIn}) {
   }
 
   return (
-    <div>
+    <Container maxWidth="sm">
+      <h1 style={{textAlign: "center"}}>Fake Store</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={username}
-          onChange={(e)=>setUsername(e.target.value)}
-        />
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={password}
-          onChange={(e)=>setPassword(e.target.value)}
-        />
-        <button type="submit">Log In</button>
+        <Stack spacing={2}>
+          <TextField 
+            id="username" 
+            name="username"
+            label="Username" 
+            variant="outlined"
+            size="small"
+            value={username}
+            onChange={(e)=>setUsername(e.target.value)}
+          />
+          <TextField
+            id="password"
+            name="password"
+            label="Password"
+            type="password"
+            size="small"
+            value={password}
+            onChange={(e)=>setPassword(e.target.value)}
+          />
+          <Button type="submit" variant="contained">Log In</Button>
+        </Stack>
       </form>
+      <br />
       <div>
-        {wrongLogin && <h2>Incorrect Log-in information. Please try again.</h2>}
+        {wrongLogin && <Alert severity="error"><AlertTitle>Incorrect Log-in Information</AlertTitle>Please try again.</Alert>}
       </div>
-    </div>  
+    </Container>
   );
 }
 

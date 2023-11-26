@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 
 function Store({loggedIn}) {
   const [fullName, setFullName] = useState("");
@@ -25,6 +29,19 @@ function Store({loggedIn}) {
 
   return (
     <div>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h4">
+            Fake Store |
+          </Typography>
+          <IconButton color="inherit">
+            Products
+          </IconButton>
+          <IconButton color="inherit">
+            Categories
+          </IconButton>
+        </Toolbar>
+      </AppBar>
       <div>
         <h1>Store</h1>
         <h2>Welcome back {fullName}!</h2>
