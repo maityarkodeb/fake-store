@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function Login({getUn, loggedIn}) {
+function Login({loggedIn}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [wrongLogin, setWrongLogin] = useState(false);
@@ -28,9 +28,21 @@ function Login({getUn, loggedIn}) {
       console.log(data);
       localStorage.setItem('login-token', data.token);
       loggedIn();
-      getUn(username);
     }).catch(error => {
       console.log(error);
+    });
+
+    fetch('https://fakestoreapi.com/users')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      data.forEach(user => {
+        if (user.username === username) {
+          localStorage.setItem('fullname', `${user.name.firstname.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')} 
+            ${user.name.lastname.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')}`);
+          localStorage.setItem('user-id', user.id);
+        }
+      });
     });
   }
 

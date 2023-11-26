@@ -4,7 +4,6 @@ import Store from './Store';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [un, setUn] = useState("");
 
   useEffect(() => {
     checkIfLoggedIn();
@@ -20,7 +19,7 @@ function App() {
 
   return (
     <div>
-      {!isLoggedIn ? <Login getUn={setUn} loggedIn={checkIfLoggedIn} /> : <Store un={un} loggedIn={checkIfLoggedIn} />}
+      {!isLoggedIn ? <Login loggedIn={checkIfLoggedIn} /> : <Store loggedIn={checkIfLoggedIn} />}
     </div>
   );
 }
