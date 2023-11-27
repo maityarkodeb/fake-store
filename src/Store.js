@@ -3,6 +3,10 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Badge from '@mui/material/Badge';
+import "./Store.css";
 
 function Store({loggedIn}) {
   const [fullName, setFullName] = useState("");
@@ -31,28 +35,29 @@ function Store({loggedIn}) {
     <div>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h4">
-            Fake Store |
-          </Typography>
-          <IconButton color="inherit">
+          <Button color="inherit">
             Products
-          </IconButton>
-          <IconButton color="inherit">
+          </Button>
+          <Button color="inherit">
             Categories
-          </IconButton>
+          </Button>
+          <div style={{marginLeft: "auto"}}>
+            <Typography className="fullName" variant="h6">
+              Welcome back {fullName}!
+            </Typography>
+            <IconButton>
+              <Badge badgeContent={numCartItems} color="secondary">
+                <ShoppingCartIcon sx={{color: "white"}} fontSize="large" />
+              </Badge>
+            </IconButton>
+            <Button style={{marginLeft: "8px"}} onClick={handleLogOut} color="inherit" variant="outlined">
+              Log Out
+            </Button>
+          </div>
         </Toolbar>
       </AppBar>
       <div>
-        <h1>Store</h1>
-        <h2>Welcome back {fullName}!</h2>
-        <h3>Your Cart: {numCartItems} Item(s)</h3>
-        <div>
-          <button onClick={handleLogOut}>Log Out</button>
-        </div>
-      </div>
-      <div>
-        <h2>Products</h2>
-        <h2>Categories</h2>
+        
       </div>
     </div>
   );
