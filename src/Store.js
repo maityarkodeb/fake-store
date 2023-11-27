@@ -13,6 +13,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
 import "./Store.css";
 
 function Store({loggedIn}) {
@@ -21,20 +23,28 @@ function Store({loggedIn}) {
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [chooseCategory, setChooseCategory] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [catProducts, setCatProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [cartProducts, setCartProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   
   useEffect(() => {
     setFullName(localStorage.getItem('fullname'));
     const id = localStorage.getItem('user-id');
+    let totalCartItems = 0;
 
     fetch(`https://fakestoreapi.com/carts/${id}`)
     .then(res => res.json())
     .then(data => {
       console.log(data);
-      setNumCartItems(data.products.length);
+      setCart(data);
+      data.products.forEach(item => {
+        totalCartItems += item.quantity;
+      })
+      setNumCartItems(totalCartItems);
     });
   }, []);
 
@@ -45,6 +55,7 @@ function Store({loggedIn}) {
     setShowAllProducts(false);
     setShowCategories(false);
     setChooseCategory(false);
+    setShowCart(false);
     loggedIn();
   }
 
@@ -57,6 +68,7 @@ function Store({loggedIn}) {
       setShowAllProducts(true);
       setShowCategories(false);
       setChooseCategory(false);
+      setShowCart(false);
     });
   }
 
@@ -69,6 +81,7 @@ function Store({loggedIn}) {
       setShowCategories(true);
       setShowAllProducts(false);
       setChooseCategory(false);
+      setShowCart(false);
     });
   }
 
@@ -80,6 +93,26 @@ function Store({loggedIn}) {
       setCatProducts(data);
       setSelectedCategory(cat);
       setChooseCategory(true);
+      setShowCategories(false);
+      setShowAllProducts(false);
+      setShowCart(false);
+    });
+  }
+
+  const handleCart = () => {
+    let promises = [];
+    cart.products.forEach(product => {
+      promises.push(fetch(`https://fakestoreapi.com/products/${product.productId}`).then(res => res.json()));
+    });
+    Promise.all(promises)
+    .then(r => {
+      console.log(r);
+      for(let i = 0; i < cart.products.length; i++) {
+        r[i].quantity = cart.products[i].quantity;
+      }
+      setCartProducts(r);
+      setShowCart(true);
+      setChooseCategory(false);
       setShowCategories(false);
       setShowAllProducts(false);
     });
@@ -99,12 +132,12 @@ function Store({loggedIn}) {
             <Typography className="fullName" variant="h6">
               Welcome back {fullName}!
             </Typography>
-            <IconButton>
+            <IconButton onClick={handleCart}>
               <Badge badgeContent={numCartItems} color="secondary">
                 <ShoppingCartIcon sx={{color: "white"}} fontSize="large" />
               </Badge>
             </IconButton>
-            <Button style={{marginLeft: "8px"}} onClick={handleLogOut} color="inherit" variant="outlined">
+            <Button style={{marginLeft: "11px"}} onClick={handleLogOut} color="inherit" variant="outlined">
               Log Out
             </Button>
           </div>
@@ -147,6 +180,21 @@ function Store({loggedIn}) {
                 </Grid>
               )}
             </Grid>
+          </div>
+        }
+        {showCart &&
+          <div>
+            <h1>Your Cart - {numCartItems} items</h1>
+            <List>
+              {cartProducts.map((prod, i) =>
+                <ListItem key={i}>
+                  <ListItemAvatar>
+                    <Avatar src={prod.image} />
+                  </ListItemAvatar>
+                  <ListItemText primary={prod.title} secondary={"Quantity: " + prod.quantity} />
+                </ListItem>
+              )}
+            </List>
           </div>
         }
       </Container>
