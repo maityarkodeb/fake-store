@@ -9,14 +9,23 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import "./Store.css";
 
 function Store({loggedIn}) {
   const [fullName, setFullName] = useState("");
   const [numCartItems, setNumCartItems] = useState(0);
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
+  const [chooseCategory, setChooseCategory] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
-
+  const [categories, setCategories] = useState([]);
+  const [catProducts, setCatProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  
   useEffect(() => {
     setFullName(localStorage.getItem('fullname'));
     const id = localStorage.getItem('user-id');
@@ -33,17 +42,46 @@ function Store({loggedIn}) {
     localStorage.removeItem('login-token');
     localStorage.removeItem('fullname');
     localStorage.removeItem('user-id');
-    showAllProducts(false);
+    setShowAllProducts(false);
+    setShowCategories(false);
+    setChooseCategory(false);
     loggedIn();
   }
 
   const handleAllProducts = () => {
-    setShowAllProducts(true);
     fetch('https://fakestoreapi.com/products')
     .then(res => res.json())
     .then(data => {
       console.log(data);
       setAllProducts(data);
+      setShowAllProducts(true);
+      setShowCategories(false);
+      setChooseCategory(false);
+    });
+  }
+
+  const handleCategories = () => {
+    fetch('https://fakestoreapi.com/products/categories')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setCategories(data);
+      setShowCategories(true);
+      setShowAllProducts(false);
+      setChooseCategory(false);
+    });
+  }
+
+  const displayCat = (cat) => {
+    fetch(`https://fakestoreapi.com/products/category/${cat}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setCatProducts(data);
+      setSelectedCategory(cat);
+      setChooseCategory(true);
+      setShowCategories(false);
+      setShowAllProducts(false);
     });
   }
 
@@ -54,7 +92,7 @@ function Store({loggedIn}) {
           <Button onClick={handleAllProducts} color="inherit">
             Products
           </Button>
-          <Button color="inherit">
+          <Button onClick={handleCategories} color="inherit">
             Categories
           </Button>
           <div style={{marginLeft: "auto"}}>
@@ -72,10 +110,10 @@ function Store({loggedIn}) {
           </div>
         </Toolbar>
       </AppBar>
-      <div>
+      <Container maxWidth="lg">
         {showAllProducts && 
-          <Container maxWidth="lg">
-            <h1>All Products - {allProducts.length} out of {allProducts.length}</h1>
+          <div>
+            <h1>All Products - {allProducts.length} products</h1>
             <Grid container spacing={2}>
               {allProducts.map((product, i) => 
                 <Grid item key={i} lg={4}>
@@ -83,9 +121,35 @@ function Store({loggedIn}) {
                 </Grid>
               )}
             </Grid>
-          </Container>
+          </div>
         }
-      </div>
+        {showCategories &&
+          <div>
+            <h1>All Categories - {categories.length} categories</h1>
+            <List>
+              {categories.map((cat, i) =>
+                <ListItem key={i}>
+                  <ListItemButton onClick={() => displayCat(cat)}>
+                    <ListItemText primary={cat.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')} />
+                  </ListItemButton>
+                </ListItem>  
+              )}
+            </List>
+          </div>
+        }
+        {chooseCategory &&
+          <div>
+            <h1>{selectedCategory.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')} - {catProducts.length} products</h1>
+            <Grid container spacing={2}>
+              {catProducts.map((product, i) => 
+                <Grid item key={i} lg={4}>
+                  <Product prod={product} />
+                </Grid>
+              )}
+            </Grid>
+          </div>
+        }
+      </Container>
     </div>
   );
 }
